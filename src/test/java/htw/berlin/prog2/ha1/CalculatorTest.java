@@ -91,7 +91,7 @@ class CalculatorTest {
 
     //TODO hier weitere Tests erstellen
     @Test
-    @DisplayName("should handle division with multi-digit numbers")
+    @DisplayName("should do the division with multidigit numbers")
     void testChainedDivision() {
         Calculator calc = new Calculator();
 
@@ -102,7 +102,7 @@ class CalculatorTest {
         calc.pressDigitKey(5);
         calc.pressEqualsKey();
 
-        // result (20) ÷ 2 = 10
+        // result ÷ 2
         calc.pressBinaryOperationKey("/");
         calc.pressDigitKey(2);
         calc.pressEqualsKey();
@@ -112,6 +112,10 @@ class CalculatorTest {
 
         assertEquals(expected, actual);
     }
+
+
+
+
 
     @Test
     @DisplayName("should multiply negative and positive numbers")
@@ -125,6 +129,47 @@ class CalculatorTest {
         calc.pressEqualsKey();
 
         String expected = "-10";
+        String actual = calc.readScreen();
+
+        assertEquals(expected, actual);
+    }
+
+
+
+
+    @Test
+    @DisplayName("should calculate by order operations ")
+    void testChainedOperationsOrder() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(5);
+        calc.pressBinaryOperationKey("+");
+        calc.pressDigitKey(2);
+        calc.pressBinaryOperationKey("x");
+        calc.pressDigitKey(3);
+        calc.pressEqualsKey();
+
+        String expected = "11";
+        String actual = calc.readScreen();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("should calculate percentage after multiplication")
+    void testPercentageCalculation() {
+        Calculator calc = new Calculator();
+
+        calc.pressDigitKey(2);
+        calc.pressDigitKey(0);
+        calc.pressDigitKey(0);
+        calc.pressBinaryOperationKey("x");
+        calc.pressDigitKey(1);
+        calc.pressDigitKey(0);
+        calc.pressUnaryOperationKey("%");
+        calc.pressEqualsKey();
+
+        String expected = "20";
         String actual = calc.readScreen();
 
         assertEquals(expected, actual);
