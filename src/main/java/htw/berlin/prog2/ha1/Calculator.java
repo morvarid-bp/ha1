@@ -74,14 +74,38 @@ public class Calculator {
     public void pressUnaryOperationKey(String operation) {
         latestValue = Double.parseDouble(screen);
         latestOperation = operation;
-        var result = switch(operation) {
-            case "√" -> Math.sqrt(Double.parseDouble(screen));
-            case "%" -> Double.parseDouble(screen) / 100;
-            case "1/x" -> 1 / Double.parseDouble(screen);
-            default -> throw new IllegalArgumentException();
-        };
+        double result = 0.0;
+        switch (operation) {
+            case "√":
+                if (Double.parseDouble(screen) < 0) {
+                    screen = "Error";
+                    return;
+                }
+                result = Math.sqrt(Double.parseDouble(screen));
+                break;
+            case "%":
+                if (!latestOperation.isEmpty()) {
+                    result = latestValue * Double.parseDouble(screen) / 100;
+                } else {
+                    result = Double.parseDouble(screen) / 100;
+                }
+                break;
+
+            case "1/x":
+                if (Double.parseDouble(screen) == 0) {
+                    screen = "Error";
+                    return;
+                }
+                result = 1 / Double.parseDouble(screen);
+                break;
+
+            default:
+                throw new IllegalArgumentException();
+        }
+
         screen = Double.toString(result);
-        if(screen.equals("NaN")) screen = "Error";
+        if(screen.equals("NaN") || screen.equals("Infinity")) screen = "Error";
+        if (screen.endsWith(".0")) screen = screen.substring(0, screen.length() - 2);
         if(screen.contains(".") && screen.length() > 11) screen = screen.substring(0, 10);
 
     }
@@ -118,7 +142,13 @@ public class Calculator {
      * und das Ergebnis direkt angezeigt.
      */
     public void pressEqualsKey() {
-        var result = switch(latestOperation) {
+
+        if (latestOperation.equals("/") && Double.parseDouble(screen) == 0) {
+            screen = "Error";
+            return;
+        }
+
+        var result = switch (latestOperation) {
             case "+" -> latestValue + Double.parseDouble(screen);
             case "-" -> latestValue - Double.parseDouble(screen);
             case "x" -> latestValue * Double.parseDouble(screen);
@@ -126,8 +156,9 @@ public class Calculator {
             default -> throw new IllegalArgumentException();
         };
         screen = Double.toString(result);
-        if(screen.equals("Infinity")) screen = "Error";
+        if(screen.equals("Infinity")|| screen.equals("NaN")) screen = "Error";
         if(screen.endsWith(".0")) screen = screen.substring(0,screen.length()-2);
         if(screen.contains(".") && screen.length() > 11) screen = screen.substring(0, 10);
+        latestValue = result;
     }
 }
